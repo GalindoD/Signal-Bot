@@ -13,18 +13,11 @@ def send_email():
     EMAIL_PASSWORD = os.environ.get('EMAIL_PASS')
     RECIPIENT = os.environ.get('EMAIL_RECEIVER')
 
-    # 2. Fallback: If variables aren't set, ask for them manually (Local testing)
-    if not email_user or not email_pass:
-        print("--- Local Execution Detected ---")
-        email_user = email_user or input("Enter your Gmail address: ")
-        email_pass = email_pass or input("Enter your 16-character App Password: ")
-        email_receiver = email_receiver or email_user  # Default to sending to yourself
-
     msg = EmailMessage()
-    msg['Subject'] = 'Daily Automated Update'
+    msg['Subject'] = 'Daily Signals settig positions'
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = RECIPIENT
-    msg.set_content('Hello! This is your automated daily email sent via GitHub Actions.')
+    msg.set_content('Here should be the table with the signals.')
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
@@ -35,4 +28,4 @@ if __name__ == "__main__":
     send_email()
 
 
-print(EMAIL_ADDRESS)
+#print(EMAIL_ADDRESS)
