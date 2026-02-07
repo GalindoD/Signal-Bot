@@ -94,7 +94,7 @@ def create_signal_df(df):
 
 #MAIN
 
-ticker_list = ["BTC-USD", "PAXG-USD", "SOL-USD", "SUI20947-USD", "USDMXN=X", "QQQ"]
+ticker_list = ["BTC-USD", "PAXG-USD", "SOL-USD", "SUI20947-USD", "QQQ"]
 periodicity = "1d"
 
 big_df = pd.DataFrame() # Initialize big_df as an empty DataFrame
@@ -104,7 +104,10 @@ for ticker in ticker_list:
   df_result = calculate_buy_line(ticker_df)
   signal_df = create_signal_df(df_result)
   big_df = pd.concat([signal_df, big_df], axis=0)
-
+  big_df = big_df.iloc[:, 2:]
+  emoji_map = {-1.0: '🔴', 0.0: '⚪', 1.0: '🟢'}
+  big_df_emojified = big_df.replace(emoji_map).fillna('-')
+  
 #print(big_df)
 
 
@@ -118,10 +121,11 @@ def send_email():
     RECIPIENT = os.environ.get('EMAIL_RECEIVER')
 
     msg = EmailMessage()
-    msg['Subject'] = 'Daily Signals settig positions'
+    msg['Subject'] = 'Daily Signals setting positions'
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = RECIPIENT
-    msg.set_content('Here should be the table with the signals. \n\n' + big_df.to_string())
+    msg.set_content(big_df_emojified.to_string())
+
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
@@ -130,6 +134,3 @@ def send_email():
 
 if __name__ == "__main__":
     send_email()
-
-
-#print(EMAIL_ADDRESS)
