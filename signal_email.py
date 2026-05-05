@@ -94,7 +94,11 @@ def create_signal_df(df):
 
 #MAIN
 
-ticker_list = ["BTC-USD", "PAXG-USD", "SOL-USD", "SUI20947-USD", "QQQ", 'AMD', 'AMZN', 'ASML', 'META', 'GOOG', 'MSFT', 'NFLX', 'NVDA', 'TSLA', 'MELI', 'AAPL', 'QCOM']
+ticker_list = ["BTC-USD", "PAXG-USD", "SOL-USD", "SUI20947-USD", 
+               "QQQ", 'AMD', 'AMZN', 'ASML', 'META', 'GOOG', 
+               'MSFT', 'NFLX', 'NVDA', 'TSLA', 'MELI', 'AAPL', 
+               'QCOM', "SNDK", "LITE", "MU", "BRK-B", "AVGO",
+               "TSM", "AXP", "ARM", "PLTR", "INTC", "UBER", "TCEHY"]
 periodicity = "1d"
 
 big_df = pd.DataFrame() # Initialize big_df as an empty DataFrame
