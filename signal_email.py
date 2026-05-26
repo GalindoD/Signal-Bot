@@ -25,15 +25,16 @@ import sys
 import pandas as pd
 import yfinance as yf
 import talib
+import numpy as np
+from datetime import datetime, timedelta
 
 #DATA GATHERING
 
+start_date = (datetime.now() - timedelta(days=2*365)).strftime('%Y-%m-%d')
 def gatherdata(ticker, periodicity):
   data = yf.download(
       tickers = ticker,
-      #start="2025-01-01",
-      #end="2026-01-20",
-      period="max",
+      start=start_date,
       interval=periodicity,
       ignore_tz=True,
       auto_adjust=True)
@@ -94,11 +95,14 @@ def create_signal_df(df):
 
 #MAIN
 
-ticker_list = ["BTC-USD", "PAXG-USD", "SOL-USD", "SUI20947-USD", 
-               "QQQ", 'AMD', 'AMZN', 'ASML', 'META', 'GOOG', 
-               'MSFT', 'NFLX', 'NVDA', 'TSLA', 'MELI', 'AAPL', 
-               'QCOM', "SNDK", "LITE", "MU", "BRK-B", "AVGO",
-               "TSM", "AXP", "ARM", "PLTR", "INTC", "UBER", "TCEHY"]
+ticker_list = ["USOIL-USD", "LIT", "PALL", "PPLT", "COPX", "SLV",
+               "URA", "AMAT", "LRCX", "GLW", "005930.KS", "TCEHY",
+               "UBER", "INTC", "PLTR", "ARM", "AXP", "TSM", 
+               "AVGO", "BRK-B", "MA", "LITE", "SNDK", "QCOM",
+               "AAPL", "MELI", "TSLA", "NVDA", "NFLX", "MSFT",
+               "GOOG", "META", "ASML", "AMZN", "AMD", "QQQ", "SUI20947-USD",
+               "SOL-USD", "PAXG-USD", "BTC-USD"]
+
 periodicity = "1d"
 
 big_df = pd.DataFrame() # Initialize big_df as an empty DataFrame
@@ -109,10 +113,12 @@ for ticker in ticker_list:
   signal_df = create_signal_df(df_result)
   big_df = pd.concat([signal_df, big_df], axis=0)
   big_df = big_df.iloc[:, 2:]
+  unique_counts = big_df.apply(lambda x: x.dropna().nunique(), axis=1)
+  big_df = big_df.loc[unique_counts.sort_values(ascending=False).index]
   emoji_map = {-1.0: '🔴', 0.0: '⚪', 1.0: '🟢'}
   big_df_emojified = big_df.replace(emoji_map).fillna('-')
   
-#print(big_df)
+
 
 
 
