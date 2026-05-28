@@ -88,14 +88,14 @@ def calculate_buy_line(df, fast_len=30, slow_len=60, atr_len=60, atr_mult=0.18):
 # Create Signal DF
 
 def create_signal_df(df):
-  df_transposed = df[["buy_trend"]].tail(6).T
+  df_transposed = df[["buy_trend"]].tail(7).T
   df_transposed = df_transposed.rename(index={'buy_trend': ticker})
   return df_transposed
 
 
 #MAIN
 
-ticker_list = ["USOIL-USD", "LIT", "PALL", "PPLT", "COPX", "SLV",
+ticker_list = ["LIT", "PALL", "PPLT", "COPX", "SLV",
                "URA", "AMAT", "LRCX", "GLW", "005930.KS", "TCEHY",
                "UBER", "INTC", "PLTR", "ARM", "AXP", "TSM", 
                "AVGO", "BRK-B", "MA", "LITE", "SNDK", "QCOM",
