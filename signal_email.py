@@ -96,7 +96,7 @@ def create_signal_df(df):
 #MAIN
 
 ticker_list = ["LIT", "PALL", "PPLT", "COPX", "SLV",
-               "URA", "AMAT", "LRCX", "GLW", "005930.KS", "TCEHY",
+               "URA", "RGTI", "QBTS", "AMAT", "LRCX", "GLW", "005930.KS", "TCEHY",
                "UBER", "INTC", "PLTR", "ARM", "AXP", "TSM", 
                "AVGO", "BRK-B", "MA", "LITE", "SNDK", "QCOM",
                "AAPL", "MELI", "TSLA", "NVDA", "NFLX", "MSFT",
