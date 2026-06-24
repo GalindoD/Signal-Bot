@@ -95,13 +95,15 @@ def create_signal_df(df):
 
 #MAIN
 
-ticker_list = ["LIT", "PALL", "PPLT", "COPX", "SLV",
-               "URA", "RGTI", "QBTS", "AMAT", "LRCX", "GLW", "005930.KS", "TCEHY",
-               "UBER", "INTC", "PLTR", "ARM", "AXP", "TSM", 
-               "AVGO", "BRK-B", "MA", "LITE", "SNDK", "QCOM",
-               "AAPL", "MELI", "TSLA", "NVDA", "NFLX", "MSFT",
-               "GOOG", "META", "ASML", "AMZN", "AMD", "QQQ", "SUI20947-USD",
-               "SOL-USD", "PAXG-USD", "BTC-USD"]
+ticker_list = ["LIT", "PALL", "PPLT", "COPX", "SLV", "URA",
+               "EBAY", "WMT", "COST", "TGT", "KO", "PEP", "PG", "LLY",
+               "JNJ", "ABBV", "HD", "MCD", "WEN", "VZ", "TMUS", "MDLZ",
+               "CSU", "NOW", "RGTI", "QBTS", "AMAT", "LRCX", "GLW", 
+               "005930.KS", "TCEHY", "UBER", "INTC", "PLTR", "ARM", 
+               "AXP", "TSM", "AVGO", "BRK-B", "MA", "LITE", "SNDK", 
+               "QCOM", "AAPL", "MELI", "TSLA", "NVDA", "NFLX", "MSFT",
+               "GOOG", "META", "ASML", "AMZN", "AMD", "QQQ", 
+               "SUI20947-USD", "SOL-USD", "PAXG-USD", "BTC-USD"]
 
 periodicity = "1d"
 
