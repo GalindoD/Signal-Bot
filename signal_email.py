@@ -95,16 +95,33 @@ def create_signal_df(df):
 
 #MAIN
 
-ticker_list = ["LIT", "PALL", "PPLT", "COPX", "SLV", "URA",
-               "EBAY", "WMT", "COST", "TGT", "KO", "PEP", "PG", "LLY",
-               "ADBE", "FISV", "LULU", "ZTS", "VEEV", "PYPL", "FVRR",
-               "JNJ", "ABBV", "HD", "MCD", "WEN", "VZ", "TMUS", "MDLZ",
-               "CNSWF", "NOW", "RGTI", "QBTS", "AMAT", "LRCX", "GLW", 
-               "005930.KS", "TCEHY", "UBER", "INTC", "PLTR", "ARM", 
-               "AXP", "TSM", "AVGO", "BRK-B", "MA", "LITE", "SNDK", 
-               "QCOM", "AAPL", "MELI", "TSLA", "NVDA", "NFLX", "MSFT",
-               "GOOG", "META", "ASML", "AMZN", "AMD", "QQQ", 
-               "SUI20947-USD", "SOL-USD", "PAXG-USD", "BTC-USD"]
+ticker_list = [
+    "005930.KS", 
+    "AAPL", "ABBV", "ADBE", "ADSK", "AGI", "AMAT", "AMD", "AMZN", "ANET", "APH", "ARM", "ASML", "AVGO", "AXP", 
+    "B", "BAP", "BAM", "BKNG", "BRK-B", "BSY", "BTC-USD", "BWXT", 
+    "CAAP", "CART", "COPX", "COST", "CW", 
+    "DXCM", 
+    "EBAY", "EME", 
+    "FICO","FISV", "FIX", "FN", "FNV", "FVRR", 
+    "GLW", "GOOG", 
+    "HD", "HEI", "HWM", 
+    "IBKR", "INCY", "INTC", "INTU", "ISRG", 
+    "JNJ", 
+    "KO", 
+    "LIT", "LITE", "LLY", "LRCX", "LULU", 
+    "MA", "MCD", "MCK", "MDLZ", "MELI", "META", "MSCI", "MSFT", 
+    "NBIX", "NFLX", "NOW", "NVDA", 
+    "OLLI", "ONON", "OR", 
+    "PALL", "PAXG-USD", "PEP", "PG", "PLTR", "PPLT", "PYPL", 
+    "QBTS", "QCOM", "QQQ", 
+    "RGTI", "RMD", "ROL", 
+    "SAP", "SLV", "SNDK", "SOL-USD", "SUI20947-USD", 
+    "TCEHY", "TGT", "TMUS", "TSLA", "TSM", "TW", 
+    "UBER", "URA", 
+    "V", "VEEV", "VIK", "VOO", "VZ", 
+    "WMT", "WWD", 
+    "ZTS"
+]
 
 periodicity = "1d"
 
