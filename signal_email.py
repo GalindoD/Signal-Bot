@@ -97,7 +97,7 @@ def create_signal_df(df):
 
 ticker_list = ["LIT", "PALL", "PPLT", "COPX", "SLV", "URA",
                "EBAY", "WMT", "COST", "TGT", "KO", "PEP", "PG", "LLY",
-               "ADBE", "FISV", "LULU", "ZTS", "VEEV", "PYPL",
+               "ADBE", "FISV", "LULU", "ZTS", "VEEV", "PYPL", "FVRR",
                "JNJ", "ABBV", "HD", "MCD", "WEN", "VZ", "TMUS", "MDLZ",
                "CNSWF", "NOW", "RGTI", "QBTS", "AMAT", "LRCX", "GLW", 
                "005930.KS", "TCEHY", "UBER", "INTC", "PLTR", "ARM", 
