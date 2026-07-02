@@ -87,7 +87,7 @@ def calculate_buy_line(df, fast_len=30, slow_len=60, atr_len=60, atr_mult=0.18):
 
 # Create Signal DF
 
-def create_signal_df(df):
+def create_signal_df(df, ticker):
   df_transposed = df[["buy_trend"]].tail(7).T
   df_transposed = df_transposed.rename(index={'buy_trend': ticker})
   return df_transposed
@@ -95,53 +95,67 @@ def create_signal_df(df):
 
 #MAIN
 
-ticker_list = [
+rule1_tickers = ["AEM", "AGI", "ANET", "ASML", "AU", "AVGO", 
+                 "DXCM", "EME", "FIX", "FN", "FNV", "FTNT", "GCT", "GFI", "GMED", 
+                 "GOOG", "GRMN", "INTU", "ISRG", "MEDP", "META", "MPWR", "MSFT", 
+                 "NFLX", "NVDA", "OR", "PAYC", "RMD", "ROL", "SCCO", "TSM", "TW", 
+                 "UI", "V", "VEEV", "WPM"
+                 ]
+
+index_tickers = ["QQQ", "VOO"]
+
+crypto_alts = ["BTC-USD", "SOL-USD", "SUI20947-USD", "SLV", "PAXG-USD", 
+               "URA", "COPX", "PPLT", "PALL", "LIT"]
+
+other_tickers = [
     "005930.KS", 
-    "AAPL", "ABBV", "ADBE", "AEM", "ADSK", "AGI", "AMAT", "AMD", "AMZN", "ANET", "APH", "ARM", "ASML", "AVGO", "AXP", 
-    "B", "BAP", "BAM", "BKNG", "BRK-B", "BSY", "BTC-USD", "BWXT", 
-    "CAAP", "CART", "COPX", "COST", "CW", "CGNX",
-    "DXCM", 
-    "EBAY", "EME", 
-    "FICO","FISV", "FIX", "FN", "FNV", "FVRR", 
-    "GCT", "GFI", "GLW", "GMED", "GOOG", "GRMN", 
+    "AAPL", "ABBV", "ADBE", "ADSK",  "AMAT", "AMD", "AMZN", "APH", "ARM",  "AXP", 
+    "B", "BAP", "BAM", "BKNG", "BRK-B", "BSY", "BWXT", 
+    "CAAP", "CART",  "COST", "CW", "CGNX",
+    "EBAY", 
+    "FICO","FISV", "FVRR", 
+    "GLW", 
     "HD", "HEI", "HWM", 
-    "IBKR", "INCY", "INTC", "INTU", "ISRG", 
+    "IBKR", "INCY", "INTC",  
     "JNJ", 
     "KO", 
-    "LIT", "LITE", "LLY", "LRCX", "LULU", 
-    "MA", "MCD", "MCK", "MDLZ", "MELI", "META", "MEDP", "MSCI", "MSFT", 
-    "NBIX", "NFLX", "NOW", "NVDA", 
-    "OLLI", "ONON", "OR", 
-    "PALL", "PAXG-USD", "PEP", "PG", "PLTR", "PPLT", "PYPL", 
-    "QBTS", "QCOM", "QQQ", 
-    "RGTI", "RMD", "ROL", "ROK",
-    "SAP", "SCCO", "SLV", "SNDK", "SOL-USD", "SUI20947-USD", 
-    "TCEHY", "TGT", "TMUS", "TSLA", "TSM", "TW", 
-    "UBER", "UI", "URA", 
-    "V", "VEEV", "VIK", "VOO", "VZ", 
-    "WMT", "WWD", "WPM", 
-    "ZTS"
+    "LITE", "LLY", "LRCX", "LULU", 
+    "MA", "MCD", "MCK", "MDLZ", "MELI",   "MSCI", 
+    "NBIX",  "NOW", 
+    "OLLI", "ONON",  
+    "PEP", "PG", "PLTR",  "PYPL", 
+    "QBTS", "QCOM", 
+    "RGTI",   "ROK",
+    "SAP",  "SNDK", 
+    "TCEHY", "TGT", "TMUS", "TSLA",  
+    "UBER",   
+    "VIK",  "VZ", 
+    "WMT", "WWD",  
+    "ZTS"       
 ]
 
 periodicity = "1d"
 
-big_df = pd.DataFrame() # Initialize big_df as an empty DataFrame
+def create_df(tickers):
+  big_df = pd.DataFrame()
+  for ticker in tickers:
+    ticker_df = gatherdata(ticker, periodicity)
+    df_result = calculate_buy_line(ticker_df)
+    signal_df = create_signal_df(df_result, ticker)
+    big_df = pd.concat([signal_df, big_df], axis=0)
+    big_df = big_df.iloc[:, 2:]
+    unique_counts = big_df.apply(lambda x: x.dropna().nunique(), axis=1)
+    big_df = big_df.loc[unique_counts.sort_values(ascending=False).index]
+    emoji_map = {-1.0: '🔴', 0.0: '⚪', 1.0: '🟢'}
+    big_df_emojified = big_df.replace(emoji_map).fillna('-')
+    
+  return big_df_emojified
 
-for ticker in ticker_list:
-  ticker_df = gatherdata(ticker, periodicity)
-  df_result = calculate_buy_line(ticker_df)
-  signal_df = create_signal_df(df_result)
-  big_df = pd.concat([signal_df, big_df], axis=0)
-  big_df = big_df.iloc[:, 2:]
-  unique_counts = big_df.apply(lambda x: x.dropna().nunique(), axis=1)
-  big_df = big_df.loc[unique_counts.sort_values(ascending=False).index]
-  emoji_map = {-1.0: '🔴', 0.0: '⚪', 1.0: '🟢'}
-  big_df_emojified = big_df.replace(emoji_map).fillna('-')
+index_df = create_df(index_tickers)
+rule1_df = create_df(rule1_tickers)
+other_df = create_df(other_tickers)
+crypto_df = create_df(crypto_alts)
   
-
-
-
-
 
 
 def send_email():
@@ -154,7 +168,7 @@ def send_email():
     msg['Subject'] = 'Daily Signals setting positions'
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = RECIPIENT
-    msg.set_content(big_df_emojified.to_string())
+    msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {rule1_df.to_string()} \n\n Other Stocks: {other_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
 
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
