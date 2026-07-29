@@ -156,6 +156,91 @@ rule1_df = create_df(rule1_tickers)
 other_df = create_df(other_tickers)
 crypto_df = create_df(crypto_alts)
   
+def get_data(ticker_symbol):
+    ticker = yf.Ticker(ticker_symbol)
+    return ticker
+
+def calculate_EPS(ticker):
+    info = ticker.info
+    EPS = info.get('trailingEps')
+    return EPS
+
+def calculate_GrowthRate(ticker):
+    AnalystGrowth = ticker.growth_estimates["stockTrend"]["+1y"]
+    income_stmt = ticker.financials
+    each_year_metrics = income_stmt.loc[['Diluted EPS']] if 'Diluted EPS' in income_stmt.index else income_stmt.loc[['Net Income']]
+    eps_series = each_year_metrics.loc['Diluted EPS'].dropna().sort_index()
+
+    if len(eps_series) > 1:
+        beginning_val = eps_series.iloc[0]
+        ending_val = eps_series.iloc[-1]
+        num_years = len(eps_series) - 1
+        if beginning_val > 0:
+            cagr = (ending_val / beginning_val) ** (1 / num_years) - 1
+        else:
+            cagr = (ending_val - beginning_val + abs(beginning_val) / abs(beginning_val) ) ** (1 / num_years) - 1
+
+    GR = (cagr + AnalystGrowth)/2
+    if GR > 0.2:
+        GR = 0.2
+  
+    return GR
+
+def calculate_PE(ticker):
+    info = ticker.info
+    TPE = info.get('trailingPE')
+  
+    try:
+        full_financials = ticker.get_earnings_dates(limit=50) 
+    except:
+        full_financials = ticker.get_earnings_dates()
+  
+    annual_eps = ticker.financials.loc['Diluted EPS'].dropna()
+  
+    historical_pe_list = []
+  
+    for date, eps in annual_eps.items():
+        price_history = ticker.history(start=date - pd.Timedelta(days=5), end=date + pd.Timedelta(days=5))
+        if not price_history.empty:
+            price = price_history['Close'].iloc[-1]
+            pe = price / eps
+            historical_pe_list.append({'Date': date.year, 'Close': price, 'EPS': eps, 'PE': pe})
+  
+    pe_df = pd.DataFrame(historical_pe_list)
+    if not pe_df.empty:
+        avg_pe = pe_df['PE'].mean()
+  
+    PE = min(TPE, avg_pe, GR*2*100)
+
+    return PE
+
+valuation_df = pd.DataFrame()
+
+valuation_data = []
+
+for ticker_symbol in rule1_tickers:
+    ticker = get_data(ticker_symbol)
+    EPS = calculate_EPS(ticker)
+    GR = calculate_GrowthRate(ticker)
+    PE = calculate_PE(ticker)
+    FutureValue = EPS * (1 + GR) ** 5  * (1 + (GR*0.8)) ** 3 * (1 + (GR*0.5)) ** 2   * PE
+    CurrentValue = FutureValue / (1.15) ** 10
+
+    current_price = ticker.info['regularMarketPrice']
+    buy_sell_signal = "BUY" if current_price < CurrentValue else ""
+
+    valuation_data.append({
+        'Ticker': ticker_symbol,
+        'Current': current_price,
+        'Value': CurrentValue,
+        'Buy/Sell': buy_sell_signal
+    })
+
+valuation_df = pd.DataFrame(valuation_data).set_index('Ticker')
+
+merged_df = pd.merge(valuation_df, rule1_df, left_index=True, right_index=True)
+
+
 
 
 def send_email():
@@ -168,7 +253,7 @@ def send_email():
     msg['Subject'] = 'Daily Signals setting positions'
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = RECIPIENT
-    msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {rule1_df.to_string()} \n\n Other Stocks: {other_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
+    msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {merged_df.to_string()} \n\n Other Stocks: {other_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
 
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
