@@ -186,7 +186,7 @@ def calculate_GrowthRate(ticker):
   
     return GR
 
-def calculate_PE(ticker):
+def calculate_PE(ticker, GR):
     info = ticker.info
     TPE = info.get('trailingPE')
   
@@ -218,27 +218,31 @@ valuation_df = pd.DataFrame()
 
 valuation_data = []
 
-for ticker_symbol in rule1_tickers:
-    ticker = get_data(ticker_symbol)
-    EPS = calculate_EPS(ticker)
-    GR = calculate_GrowthRate(ticker)
-    PE = calculate_PE(ticker)
-    FutureValue = EPS * (1 + GR) ** 5  * (1 + (GR*0.8)) ** 3 * (1 + (GR*0.5)) ** 2   * PE
-    CurrentValue = FutureValue / (1.15) ** 10
+def calculate_valuations(rule1_tickers):    
+    for ticker_symbol in rule1_tickers:
+        ticker = get_data(ticker_symbol)
+        EPS = calculate_EPS(ticker)
+        GR = calculate_GrowthRate(ticker)
+        PE = calculate_PE(ticker, GR)
+        FutureValue = EPS * (1 + GR) ** 5  * (1 + (GR*0.8)) ** 3 * (1 + (GR*0.5)) ** 2   * PE
+        CurrentValue = FutureValue / (1.15) ** 10
 
-    current_price = ticker.info['regularMarketPrice']
-    buy_sell_signal = "BUY" if current_price < CurrentValue else ""
+        current_price = ticker.info['regularMarketPrice']
+        buy_sell_signal = "BUY" if current_price < CurrentValue else ""
 
-    valuation_data.append({
-        'Ticker': ticker_symbol,
-        'Current': current_price,
-        'Value': CurrentValue,
-        'Buy/Sell': buy_sell_signal
-    })
+        valuation_data.append({
+            'Ticker': ticker_symbol,
+            'Current': current_price,
+            'Value': CurrentValue,
+            'Buy/Sell': buy_sell_signal
+        })
 
-valuation_df = pd.DataFrame(valuation_data).set_index('Ticker')
-
-merged_df = pd.merge(valuation_df, rule1_df, left_index=True, right_index=True)
+try:
+    calculate_valuations(rule1_tickers)
+    valuation_df = pd.DataFrame(valuation_data).set_index('Ticker')
+    merged_df = pd.merge(valuation_df, rule1_df, left_index=True, right_index=True)
+except:
+    print("Failed to load valuation DF")
 
 
 
@@ -253,8 +257,11 @@ def send_email():
     msg['Subject'] = 'Daily Signals setting positions'
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = RECIPIENT
-    msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {merged_df.to_string()} \n\n Other Stocks: {other_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
 
+    try:
+        msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {merged_df.to_string()} \n\n Other Stocks: {other_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
+    except:
+        msg.set_content(f"Failed to load Dataframes")
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
