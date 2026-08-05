@@ -180,7 +180,7 @@ def calculate_GrowthRate(ticker):
         else:
             cagr = (ending_val - beginning_val + abs(beginning_val) / abs(beginning_val) ) ** (1 / num_years) - 1
 
-    GR = (cagr + AnalystGrowth)/2
+    GR = cagr
     if GR > 0.2:
         GR = 0.2
   
@@ -240,7 +240,11 @@ def calculate_valuations(rule1_tickers):
 try:
     calculate_valuations(rule1_tickers)
     valuation_df = pd.DataFrame(valuation_data).set_index('Ticker')
-    rule1_df = pd.merge(valuation_df, rule1_df, left_index=True, right_index=True)
+    rule1_df = pd.merge(rule1_df, valuation_df, left_index=True, right_index=True)
+    rule1_df.columns = [
+        col.strftime('%Y-%m-%d') if isinstance(col, (pd.Timestamp, datetime)) else str(col).split(' ')[0] 
+        for col in rule1_df.columns
+    ]
 except:
     print("Failed to load valuation DF")
 
