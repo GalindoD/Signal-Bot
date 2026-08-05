@@ -240,7 +240,7 @@ def calculate_valuations(rule1_tickers):
 try:
     calculate_valuations(rule1_tickers)
     valuation_df = pd.DataFrame(valuation_data).set_index('Ticker')
-    merged_df = pd.merge(valuation_df, rule1_df, left_index=True, right_index=True)
+    rule1_df = pd.merge(valuation_df, rule1_df, left_index=True, right_index=True)
 except:
     print("Failed to load valuation DF")
 
@@ -259,7 +259,7 @@ def send_email():
     msg['To'] = RECIPIENT
 
     try:
-        msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {merged_df.to_string()} \n\n Other Stocks: {other_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
+        msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {rule1_df.to_string()} \n\n Other Stocks: {other_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
     except:
         msg.set_content(f"Failed to load Dataframes")
 
