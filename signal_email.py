@@ -153,7 +153,7 @@ def create_df(tickers):
 
 index_df = create_df(index_tickers)
 rule1_df = create_df(rule1_tickers)
-other_df = create_df(other_tickers)
+#other_df = create_df(other_tickers)
 crypto_df = create_df(crypto_alts)
   
 def get_data(ticker_symbol):
@@ -263,7 +263,7 @@ def send_email():
     msg['To'] = RECIPIENT
 
     try:
-        msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {rule1_df.to_string()} \n\n Other Stocks: {other_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
+        msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {rule1_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
     except:
         msg.set_content(f"Failed to load Dataframes")
 
