@@ -136,6 +136,7 @@ other_tickers = [
 
 periodicity = "1d"
 
+'''
 def create_df(tickers):
   big_df = pd.DataFrame()
   for ticker in tickers:
@@ -143,13 +144,51 @@ def create_df(tickers):
     df_result = calculate_buy_line(ticker_df)
     signal_df = create_signal_df(df_result, ticker)
     big_df = pd.concat([signal_df, big_df], axis=0)
-    big_df = big_df.iloc[:, 2:]
+    #big_df = big_df.iloc[:, 2:]
     unique_counts = big_df.apply(lambda x: x.dropna().nunique(), axis=1)
     big_df = big_df.loc[unique_counts.sort_values(ascending=False).index]
     emoji_map = {-1.0: '🔴', 0.0: '⚪', 1.0: '🟢'}
     big_df_emojified = big_df.replace(emoji_map).fillna('-')
     
   return big_df_emojified
+'''
+
+
+def create_df(tickers):
+    signals = []
+    
+    for ticker in tickers:
+        try:
+            ticker_df = gatherdata(ticker, periodicity)
+            df_result = calculate_buy_line(ticker_df)
+            signal_df = create_signal_df(df_result, ticker)
+            signals.append(signal_df)
+        except Exception as e:
+            print(f"Error fetching {ticker}: {e}")
+
+    if not signals:
+        return pd.DataFrame()
+
+    # Combine all signal dataframes into one
+    big_df = pd.concat(signals, axis=0)
+
+    # Sort rows by number of unique signals
+    unique_counts = big_df.apply(lambda x: x.dropna().nunique(), axis=1)
+    big_df = big_df.loc[unique_counts.sort_values(ascending=False).index]
+
+    # Slice columns ONCE after concatenation (if desired)
+    if big_df.shape[1] > 2:
+        big_df = big_df.iloc[:, 2:]
+
+    # Map values to emojis
+    emoji_map = {-1.0: '🔴', 0.0: '⚪', 1.0: '🟢'}
+    big_df_emojified = big_df.replace(emoji_map).fillna('-')
+
+    return big_df_emojified
+
+
+
+
 
 index_df = create_df(index_tickers)
 rule1_df = create_df(rule1_tickers)
@@ -227,7 +266,8 @@ def calculate_valuations(rule1_tickers):
         FutureValue = EPS * (1 + GR) ** 5  * (1 + (GR*0.8)) ** 3 * (1 + (GR*0.5)) ** 2   * PE
         CurrentValue = FutureValue / (1.15) ** 10
 
-        current_price = ticker.info['regularMarketPrice']
+        #current_price = ticker.info['regularMarketPrice']
+        current_price = ticker.info.get('regularMarketPrice') or ticker.info.get('currentPrice')
         buy_sell_signal = "BUY" if current_price < CurrentValue else ""
 
         valuation_data.append({
