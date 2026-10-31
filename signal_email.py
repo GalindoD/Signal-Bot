@@ -97,7 +97,7 @@ def create_signal_df(df, ticker):
 
 rule1_tickers = ["AEM", "AGI", "ANET", "ASML", "AU", "AVGO", 
                  "DXCM", "EME", "FIX", "FN", "FNV", "FTNT", "GCT", "GFI", "GMED", 
-                 "GOOG", "GRMN", "INTU", "ISRG", "MEDP", "META", "MPWR", "MSFT", 
+                 "GOOG", "GRMN", "INTU", "ISRG", "MEDP", "META", "MPWR", "MSFT", "MU",
                  "NFLX", "NVDA", "OR", "PAYC", "RMD", "ROL", "SCCO", "TSM", "TW", 
                  "UI", "V", "VEEV", "WPM"
                  ]
@@ -120,13 +120,13 @@ other_tickers = [
     "JNJ", 
     "KO", 
     "LITE", "LLY", "LRCX", "LULU", 
-    "MA", "MCD", "MCK", "MDLZ", "MELI",   "MSCI", 
-    "NBIX",  "NOW", 
+    "MA", "MCD", "MCK", "MDLZ", "MELI",   "MSCI",
+    "NBIX",  "NOW",
     "OLLI", "ONON",  
     "PEP", "PG", "PLTR",  "PYPL", 
     "QBTS", "QCOM", 
     "RGTI",   "ROK",
-    "SAP",  "SNDK", 
+    "SAP",  "SNDK",
     "TCEHY", "TGT", "TMUS", "TSLA",  
     "UBER",   
     "VIK",  "VZ", 
