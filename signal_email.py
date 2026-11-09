@@ -95,7 +95,8 @@ def create_signal_df(df, ticker):
 
 #MAIN
 
-rule1_tickers = ["AEM", "AGI", "ANET", "ASML", "AU", "AVGO", 
+rule1_tickers = ["AAPL", "AEM", "AGI", "ANET", "ASML", "AU", "AVGO", "AMZN",
+                 "BRK-B",
                  "DXCM", "EME", "FIX", "FN", "FNV", "FTNT", "GCT", "GFI", "GMED", 
                  "GOOG", "GRMN", "INTU", "ISRG", "MEDP", "META", "MPWR", "MSFT", "MU",
                  "NFLX", "NVDA", "OR", "PAYC", "RMD", "ROL", "SCCO", "TSM", "TW", 
