@@ -4,6 +4,10 @@ from email.message import EmailMessage
 from dotenv import load_dotenv, find_dotenv
 import subprocess
 import sys
+import numpy as np
+from datetime import datetime, timedelta
+import pandas as pd
+import logging
 
 
 # This finds the .env file and loads the variables
@@ -18,15 +22,14 @@ install_package("TA-Lib")
 
 
 
-#IMPORT LIBS
-
-import subprocess
-import sys
-import pandas as pd
 import yfinance as yf
 import talib
-import numpy as np
-from datetime import datetime, timedelta
+
+
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+
 
 #DATA GATHERING
 
@@ -73,10 +76,10 @@ def calculate_buy_line(df, fast_len=30, slow_len=60, atr_len=60, atr_mult=0.18):
 
     # Create a 'trend' column to represent the state
     # 1 = Bull, -1 = Bear, 0 = Neutral
-    df['buy_trend'] = 0
-    df.loc[condition_bull, 'buy_trend'] = 1
-    df.loc[condition_bear, 'buy_trend'] = -1
-
+    #df['buy_trend'] = 0
+    #df.loc[condition_bull, 'buy_trend'] = 1
+    #df.loc[condition_bear, 'buy_trend'] = -1
+    df['buy_trend'] = np.where(condition_bull, 1, np.where(condition_bear, -1, 0))
 
     # Define Position:
     # We map the trend, -1 to 0, so that it only entres on the upside and flat at downside
@@ -193,7 +196,6 @@ def create_df(tickers):
 
 index_df = create_df(index_tickers)
 rule1_df = create_df(rule1_tickers)
-#other_df = create_df(other_tickers)
 crypto_df = create_df(crypto_alts)
   
 def get_data(ticker_symbol):
@@ -302,16 +304,17 @@ def send_email():
     msg['Subject'] = 'Daily Signals setting positions'
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = RECIPIENT
-
+    
     try:
-        msg.set_content(f"Index:  {index_df.to_string()} \n\n Rule 1: {rule1_df.to_string()} \n\n Crypto: {crypto_df.to_string()}")
-    except:
-        msg.set_content(f"Failed to load Dataframes")
+        msg.set_content(f"Index:\n{index_df.to_string(index_names=False)}\n\nRule 1:\n{rule1_df.to_string(index_names=False)}\n\nCrypto:\n{crypto_df.to_string(index_names=False)}")
+    except Exception as e:
+        logging.error(f"Failed to load Dataframes: {e}")
+        msg.set_content("Failed to load Dataframes")
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         smtp.send_message(msg)
-    print("Email sent successfully.")
+    logging.info("Email sent successfully.")
 
 if __name__ == "__main__":
     send_email()
